@@ -53,14 +53,14 @@ const QuestionnaireForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Navigate immediately to /recommendation
     navigate('/recommendation', { state: { answers: answers } });
-  
+
     // Send the request after a 5-second delay
     setTimeout(async () => {
       try {
-        const response = await axios.post('https://skillpathfinder-1.onrender.com/aifeature', answers);
+        const response = await axios.post('http://localhost:8000/aifeature', answers);
         console.log('Form submitted:', response.data);
         // You can update the recommendation page with this data if needed
       } catch (error) {

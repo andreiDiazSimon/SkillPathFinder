@@ -11,7 +11,7 @@ const UserDashboard = ({ user }) => {
   return (
     <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-8 rounded-lg font-sans shadow-xl">
       {/* ... (previous code for user info and statistics remains the same) ... */}
-      
+
       <div className="bg-white bg-opacity-10 rounded-xl p-6 shadow-lg">
         <h2 className="text-2xl font-semibold mb-6">Achievements</h2>
         {achievements.map((achievement, index) => (
@@ -20,9 +20,9 @@ const UserDashboard = ({ user }) => {
             <div className="flex-grow">
               <h3 className="font-semibold text-lg mb-2">{achievement.name}</h3>
               <div className="bg-white bg-opacity-20 h-3 rounded-full">
-                <div 
-                  className="bg-gradient-to-r from-blue-400 to-purple-400 h-full rounded-full transition-all duration-500 ease-out" 
-                  style={{width: `${(achievement.progress / achievement.total) * 100}%`}}
+                <div
+                  className="bg-gradient-to-r from-blue-400 to-purple-400 h-full rounded-full transition-all duration-500 ease-out"
+                  style={{ width: `${(achievement.progress / achievement.total) * 100}%` }}
                 ></div>
               </div>
               <p className="text-sm text-blue-200 mt-1">{achievement.description}</p>

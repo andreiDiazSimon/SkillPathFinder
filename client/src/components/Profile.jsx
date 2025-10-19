@@ -109,7 +109,7 @@ const UserProfile = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const endpoint = 'https://skillpathfinder-1.onrender.com/api/userData/profile';
+        const endpoint = 'http://localhost:8000/api/userData/profile';
         const response = await axios.get(endpoint);
         console.log("We are here")
         setUser(response.data.user);

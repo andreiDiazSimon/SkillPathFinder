@@ -11,13 +11,13 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const endpoint = 'https://skillpathfinder-1.onrender.com/api/auth/login';
+      const endpoint = 'http://localhost:8000/api/auth/login';
       const payload = { username, password };
-      
+
       const response = await axios.post(endpoint, payload);
-      
+
       console.log(response.data);
-      
+
       // Store the token in localStorage
       localStorage.setItem('userToken', response.data.token);
       console.log("UserLogin and token saved")
@@ -29,7 +29,7 @@ const LoginPage = () => {
       toast.error("Login failed! Please Check your credentials.");
     }
   };
-  
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
@@ -54,13 +54,13 @@ const LoginPage = () => {
           <button
             type="submit"
             className="w-full bg-blue-500 text-white py-3 rounded hover:bg-blue-600"
-            
+
           >
             Login
           </button>
         </form>
         <p className="mt-6 text-center">
-          Don't have an account? 
+          Don't have an account?
           <button
             onClick={() => navigate('/signup')}
             className="text-blue-500 hover:underline ml-1"

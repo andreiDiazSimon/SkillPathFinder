@@ -14,7 +14,7 @@ const RecommendationPage = () => {
     const fetchRecommendations = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.post('https://skillpathfinder-1.onrender.com/aifeature', answers);
+        const response = await axios.post('http://localhost:8000/aifeature', answers);
         setRecommendationData(response.data);
       } catch (err) {
         setError(err.response?.data?.message || err.message);
@@ -62,7 +62,7 @@ const RecommendationPage = () => {
     <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-extrabold text-gray-900 text-center mb-12">Your Personalized Learning Recommendations</h1>
-        
+
         {/* Course Recommendations */}
         <div className="mb-12">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Recommended Courses</h2>
@@ -84,7 +84,7 @@ const RecommendationPage = () => {
             ))}
           </div>
         </div>
-        
+
         {/* Learning Path Suggestion */}
         <div className="bg-white overflow-hidden shadow rounded-lg mb-12">
           <div className="px-4 py-5 sm:p-6">
@@ -92,7 +92,7 @@ const RecommendationPage = () => {
             <p className="text-gray-700">{learningPathSuggestion}</p>
           </div>
         </div>
-        
+
         {/* Additional Resources */}
         <div className="bg-white overflow-hidden shadow rounded-lg mb-12">
           <div className="px-4 py-5 sm:p-6">
@@ -104,7 +104,7 @@ const RecommendationPage = () => {
             </ul>
           </div>
         </div>
-        
+
         {/* Career Insight */}
         <div className="bg-white overflow-hidden shadow rounded-lg">
           <div className="px-4 py-5 sm:p-6">
