@@ -6,8 +6,22 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userToken = localStorage.getItem('userToken');
-    setIsLoggedIn(!!userToken);
+    const checkLoginStatus = () => {
+      const storedUser = localStorage.getItem('user');
+      setIsLoggedIn(!!storedUser);
+    };
+
+    // Run initially
+    checkLoginStatus();
+
+    // Listen for custom events (login/logout)
+    window.addEventListener('userLoginStatusChanged', checkLoginStatus);
+    window.addEventListener('storage', checkLoginStatus);
+
+    return () => {
+      window.removeEventListener('userLoginStatusChanged', checkLoginStatus);
+      window.removeEventListener('storage', checkLoginStatus);
+    };
   }, []);
 
   const handleNavigation = (path) => {
@@ -19,9 +33,10 @@ const Navbar = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('userToken');
+    localStorage.removeItem('user');
     setIsLoggedIn(false);
-    navigate('/');
+    window.dispatchEvent(new Event("userLoginStatusChanged"));
+    navigate('/login');
   };
 
   return (
@@ -30,26 +45,48 @@ const Navbar = () => {
         <h1 className="text-3xl font-bold tracking-tight">SkillPathFinder</h1>
         <nav>
           <ul className="flex space-x-6">
-            <li><Link to="/" className="hover:text-blue-200 transition duration-300 font-medium">Home</Link></li>
-            <li>
-              <button 
-                onClick={() => handleNavigation(isLoggedIn ? '/userDashboard' : '/login')} 
-                className="hover:text-blue-200 transition duration-300 font-medium"
-              >
-                {isLoggedIn ? 'Dashboard' : 'Profile'}
-              </button>
-            </li>
+
             {isLoggedIn ? (
+              <>
+                <li>
+                  <Link to="/" className="hover:text-blue-200 transition duration-300 font-medium">
+                    Home
+                  </Link>
+                </li>
+                <li>
+                  <button
+                    onClick={() => navigate('/userDashboard')}
+                    className="hover:text-blue-200 transition duration-300 font-medium"
+                  >
+                    Dashboard
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => navigate('/profile')}
+                    className="hover:text-blue-200 transition duration-300 font-medium"
+                  >
+                    Profile
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={handleLogout}
+                    className="hover:text-blue-200 transition duration-300 font-medium"
+                  >
+                    Logout
+                  </button>
+                </li>
+              </>
+            ) : (
               <li>
-                <button 
-                  onClick={handleLogout} 
+                <Link
+                  to="/login"
                   className="hover:text-blue-200 transition duration-300 font-medium"
                 >
-                  Logout
-                </button>
+                  Login
+                </Link>
               </li>
-            ) : (
-              <li><Link to="/login" className="hover:text-blue-200 transition duration-300 font-medium">Login</Link></li>
             )}
           </ul>
         </nav>
@@ -59,3 +96,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+

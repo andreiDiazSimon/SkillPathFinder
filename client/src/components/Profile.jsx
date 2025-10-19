@@ -1,183 +1,157 @@
-// import React, { useState } from 'react';
-
-// // Sample data
-// const mockData = {
-//   user: {
-//     username: "johndoe",
-//     fullName: "John Doe",
-//     gender: "Male",
-//     profilePic: "https://avatar.iran.liara.run/public/boy?username=johndoe",
-//   },
-//   recommendations: [
-//     {
-//       courseName: "Machine Learning",
-//       platform: "Coursera",
-//       difficulty: "Intermediate",
-//       duration: "11 weeks",
-//       description: "An introduction to machine learning with a focus on algorithms and their applications.",
-//       relevance: "Highly relevant for data science and AI roles.",
-//       skillsGained: ["Python", "Data Analysis", "Machine Learning"],
-//     },
-//     {
-//       courseName: "Full Stack Web Development",
-//       platform: "Udemy",
-//       difficulty: "Beginner",
-//       duration: "8 weeks",
-//       description: "Learn to build complete web applications using the MERN stack.",
-//       relevance: "Essential for web development positions.",
-//       skillsGained: ["HTML", "CSS", "JavaScript", "React", "Node.js", "MongoDB"],
-//     },
-//     {
-//       courseName: "Data Structures and Algorithms",
-//       platform: "edX",
-//       difficulty: "Advanced",
-//       duration: "12 weeks",
-//       description: "Deep dive into data structures and algorithms, crucial for coding interviews.",
-//       relevance: "Critical for software engineering roles.",
-//       skillsGained: ["Algorithm Design", "Problem Solving", "Data Structures"],
-//     },
-//   ],
-// };
-
-// const UserProfile = () => {
-//   const [user] = useState(mockData.user);
-//   const [recommendations] = useState(mockData.recommendations);
-
-//   return (
-//     <div className="min-h-screen bg-gray-100 p-6">
-//       <div className="max-w-6xl mx-auto bg-white rounded-lg shadow-lg p-8">
-//         {/* User Profile Section */}
-//         <div className="flex items-center mb-12">
-//           <img
-//             src={user.profilePic || '/default-profile.png'}
-//             alt="Profile Picture"
-//             className="w-32 h-32 rounded-full border-4 border-blue-600 shadow-lg"
-//           />
-//           <div className="ml-6">
-//             <h1 className="text-4xl font-extrabold text-gray-800">{user.fullName}</h1>
-//             <p className="text-xl text-gray-600 mt-1">{user.gender}</p>
-//             <p className="text-md text-gray-500 mt-2">{user.username}</p>
-//           </div>
-//         </div>
-
-//         {/* Recommendations Section */}
-//         <h2 className="text-3xl font-bold text-gray-800 mb-6">Recommended Courses</h2>
-//         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-//           {recommendations.map((rec, index) => (
-//             <div
-//               key={index}
-//               className="bg-white rounded-lg shadow-md p-6 transition-transform transform hover:scale-105"
-//             >
-//               <h3 className="text-2xl font-bold text-indigo-600 mb-2">{rec.courseName}</h3>
-//               <p className="text-sm text-gray-600">Platform: <span className="font-medium">{rec.platform}</span></p>
-//               <p className="text-sm text-gray-600">Difficulty: <span className="font-medium">{rec.difficulty}</span></p>
-//               <p className="text-sm text-gray-600">Duration: <span className="font-medium">{rec.duration}</span></p>
-//               <p className="text-gray-700 mt-2">{rec.description}</p>
-//               <p className="text-gray-700 mt-2 font-semibold">Relevance: <span className="font-normal">{rec.relevance}</span></p>
-//               <div className="mt-4">
-//                 <h4 className="font-semibold text-gray-800">Skills Gained:</h4>
-//                 <div className="flex flex-wrap mt-2">
-//                   {rec.skillsGained.map((skill, idx) => (
-//                     <span
-//                       key={idx}
-//                       className="bg-indigo-500 text-white rounded-full px-3 py-1 text-sm mr-2 mb-2"
-//                     >
-//                       {skill}
-//                     </span>
-//                   ))}
-//                 </div>
-//               </div>
-//             </div>
-//           ))}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default UserProfile;
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const UserProfile = () => {
   const [user, setUser] = useState(null);
-  const [recommendations, setRecommendations] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [recommendationData, setRecommendationData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const endpoint = 'http://localhost:8000/api/userData/profile';
-        const response = await axios.get(endpoint);
-        console.log("We are here")
-        setUser(response.data.user);
-        setRecommendations(response.data.recommendations);
-        setLoading(false);
-      } catch (err) {
-        setError('Failed to fetch user data');
-        setLoading(false);
-      }
-    };
+    // Load user and cached recommendations from localStorage
+    const storedUser = localStorage.getItem('user');
+    const cachedRecommendations = localStorage.getItem('recommendations');
 
-    fetchData();
+    if (storedUser) setUser(JSON.parse(storedUser));
+    if (cachedRecommendations) setRecommendationData(JSON.parse(cachedRecommendations));
   }, []);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
-  if (!user) return <div>No user data available</div>;
+  const fetchRecommendations = async () => {
+    if (!user) return;
+
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      // Simulate sending user info or answers
+      const response = await axios.post('http://localhost:8000/aifeature', {
+        username: user.username,
+      });
+
+      setRecommendationData(response.data);
+      localStorage.setItem('recommendations', JSON.stringify(response.data)); // ✅ Cache it
+    } catch (err) {
+      setError(err.response?.data?.message || err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const clearRecommendations = () => {
+    localStorage.removeItem('recommendations');
+    setRecommendationData(null);
+  };
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <p className="text-gray-600 text-lg">No user data available. Please log in.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="max-w-6xl mx-auto bg-white rounded-lg shadow-lg p-8">
-        {/* User Profile Section */}
-        <div className="flex items-center mb-12">
+        {/* --- USER INFO --- */}
+        <div className="flex items-center mb-8">
           <img
             src={user.profilePic || '/default-profile.png'}
-            alt="Profile Picture"
+            alt="Profile"
             className="w-32 h-32 rounded-full border-4 border-blue-600 shadow-lg"
           />
           <div className="ml-6">
-            <h1 className="text-4xl font-extrabold text-gray-800">{user.fullName}</h1>
-            <p className="text-xl text-gray-600 mt-1">{user.gender}</p>
-            <p className="text-md text-gray-500 mt-2">{user.username}</p>
+            <h1 className="text-4xl font-extrabold text-gray-800">{user.username}</h1>
+            <p className="text-md text-gray-600 mt-1">{user.email}</p>
+            <p className="text-gray-500 mt-2">User ID: {user._id}</p>
           </div>
         </div>
 
-        {/* Recommendations Section */}
-        <h2 className="text-3xl font-bold text-gray-800 mb-6">Recommended Courses</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {recommendations.map((rec, index) => (
-            <div
-              key={index}
-              className="bg-white rounded-lg shadow-md p-6 transition-transform transform hover:scale-105"
+        {/* --- BUTTON CONTROLS --- */}
+        <div className="flex items-center justify-center gap-4 mb-8">
+          <button
+            onClick={fetchRecommendations}
+            disabled={isLoading}
+            className={`px-6 py-2 rounded-md text-white font-semibold transition ${isLoading ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'
+              }`}
+          >
+            {isLoading ? 'Fetching...' : 'Give Me Recommendation'}
+          </button>
+
+          {recommendationData && (
+            <button
+              onClick={clearRecommendations}
+              className="px-6 py-2 rounded-md bg-red-500 text-white font-semibold hover:bg-red-600 transition"
             >
-              <h3 className="text-2xl font-bold text-indigo-600 mb-2">{rec.courseName}</h3>
-              <p className="text-sm text-gray-600">Platform: <span className="font-medium">{rec.platform}</span></p>
-              <p className="text-sm text-gray-600">Difficulty: <span className="font-medium">{rec.difficulty}</span></p>
-              <p className="text-sm text-gray-600">Duration: <span className="font-medium">{rec.duration}</span></p>
-              <p className="text-gray-700 mt-2">{rec.description}</p>
-              <p className="text-gray-700 mt-2 font-semibold">Relevance: <span className="font-normal">{rec.relevance}</span></p>
-              <div className="mt-4">
-                <h4 className="font-semibold text-gray-800">Skills Gained:</h4>
-                <div className="flex flex-wrap mt-2">
-                  {rec.skillsGained.map((skill, idx) => (
-                    <span
-                      key={idx}
-                      className="bg-indigo-500 text-white rounded-full px-3 py-1 text-sm mr-2 mb-2"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
+              Clear Recommendation
+            </button>
+          )}
+        </div>
+
+        {/* --- RECOMMENDATION RESULTS --- */}
+        {error && (
+          <div className="text-center text-red-500 mb-6 text-lg">{error}</div>
+        )}
+
+        {recommendationData ? (
+          <>
+            {/* Recommended Courses */}
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                Recommended Courses
+              </h2>
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                {recommendationData.recommendations.map((course, index) => (
+                  <div key={index} className="bg-gray-50 border rounded-lg shadow p-6">
+                    <h4 className="text-lg font-bold text-gray-900">{course.courseName}</h4>
+                    <p className="text-sm text-gray-500 mt-1">
+                      {course.platform} • {course.difficulty} • {course.duration}
+                    </p>
+                    <p className="text-gray-700 mt-3">{course.description}</p>
+                    <p className="text-indigo-600 text-sm font-medium mt-3">
+                      Relevance: {course.relevance}
+                    </p>
+                    <div className="mt-2">
+                      <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-indigo-600 bg-indigo-200">
+                        {course.skillsGained.join(', ')}
+                      </span>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          ))}
-        </div>
+
+            {/* Learning Path Suggestion */}
+            <div className="bg-gray-50 rounded-lg shadow p-6 mb-10">
+              <h3 className="text-2xl font-semibold text-gray-800 mb-3">Suggested Learning Path</h3>
+              <p className="text-gray-700">{recommendationData.learningPathSuggestion}</p>
+            </div>
+
+            {/* Additional Resources */}
+            <div className="bg-gray-50 rounded-lg shadow p-6 mb-10">
+              <h3 className="text-2xl font-semibold text-gray-800 mb-3">Additional Resources</h3>
+              <ul className="list-disc list-inside text-gray-700">
+                {recommendationData.additionalResources.map((resource, i) => (
+                  <li key={i}>{resource}</li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Career Insight */}
+            <div className="bg-gray-50 rounded-lg shadow p-6">
+              <h3 className="text-2xl font-semibold text-gray-800 mb-3">Career Insight</h3>
+              <p className="text-gray-700">{recommendationData.careerInsight}</p>
+            </div>
+          </>
+        ) : (
+          <p className="text-center text-gray-600 text-lg">
+            Click “Give Me Recommendation” to generate personalized suggestions.
+          </p>
+        )}
       </div>
     </div>
   );
 };
 
 export default UserProfile;
+

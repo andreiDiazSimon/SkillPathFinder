@@ -43,6 +43,7 @@ import Recommendation from '../models/recommendation.model.js';
 
 const getUserProfile = async (req, res) => {
   try {
+    console.log(req.body)
     // The user is already attached to the request by the protectRoute middleware
     const userId = req.user._id; // MongoDB ObjectId of the user
 

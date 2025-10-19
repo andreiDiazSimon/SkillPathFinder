@@ -38,11 +38,12 @@ function App() {
           <Route path="/selectskill" element={<Skill />} />
           <Route path="/question" element={<QuestionnaireForm />} />
           <Route path="/recommendation" element={<RecommendationsPage />} />
-          <Route path="/profile" element={<UserProfile />}></Route>
+          <Route path="/profile" element={<UserProfile />} />
+          <Route path="/userDashboard" element={<UserDashboard user={user} />} />
           {/* Other routes */}
         </Routes>
         <ToastContainer />
-      </Router>
+      </Router >
       {/* </AuthProvider> */}
       {/* <UserDashboard user={user} /> */}
     </>

@@ -1,5 +1,3 @@
-import React from 'react';
-
 const UserDashboard = ({ user }) => {
   const achievements = [
     { icon: "🔥", name: "Learning Streak", progress: user.learningStreak, total: 30, description: "30 day learning streak" },

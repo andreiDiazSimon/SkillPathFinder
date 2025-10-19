@@ -18,12 +18,12 @@ const LoginPage = () => {
 
       console.log(response.data);
 
-      // Store the token in localStorage
-      localStorage.setItem('userToken', response.data.token);
-      console.log("UserLogin and token saved")
-      // Redirect to the home page
+      // Store the user data in localStorage
+      localStorage.setItem('user', JSON.stringify(response.data));
+      // 👇 add this line
+      window.dispatchEvent(new Event("userLoginStatusChanged"));
       navigate('/');
-      toast.success("login successfully");
+      toast.success("Login successful!");
     } catch (error) {
       console.error('Authentication error:', error.response.data);
       toast.error("Login failed! Please Check your credentials.");
