@@ -61,14 +61,15 @@ const Navbar = () => {
                     Dashboard
                   </button>
                 </li>
-                <li>
-                  <button
-                    onClick={() => navigate('/profile')}
-                    className="hover:text-blue-200 transition duration-300 font-medium"
-                  >
-                    Profile
-                  </button>
-                </li>
+                {/* tinanga na profile gago kung gusto mo lagyan kaw lagyan mo*/}
+                {/* <li> */}
+                {/*   <button */}
+                {/*     onClick={() => navigate('/profile')} */}
+                {/*     className="hover:text-blue-200 transition duration-300 font-medium" */}
+                {/*   > */}
+                {/*     Profile */}
+                {/*   </button> */}
+                {/* </li> */}
                 <li>
                   <button
                     onClick={handleLogout}
